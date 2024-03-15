@@ -24,7 +24,7 @@
             app:lottie_rawRes="@raw/wait" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingAlarmActionButton"
+            android:id="@+id/favBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="30dp"

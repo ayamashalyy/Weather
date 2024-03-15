@@ -1,6 +1,6 @@
 package com.example.weather_app
 
-import HomeFragment
+import com.example.weather_app.Home.view.HomeFragment
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle

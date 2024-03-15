@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="13dp"
         app:cardCornerRadius="50dp"
-        android:backgroundTint="@color/primaryColor">
+        android:backgroundTint="@color/light_purple">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/hourly_constrain"
