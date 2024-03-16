@@ -6,17 +6,24 @@ import androidx.lifecycle.ViewModel
 import com.example.weather_app.Model.WeatherRepository
 import com.example.weather_app.Model.WeatherResponse
 import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.example.weather_app.ApiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repo: WeatherRepository) : ViewModel() {
-    private val _weather: MutableLiveData<WeatherResponse> = MutableLiveData<WeatherResponse>()
-    val weather: LiveData<WeatherResponse> get() = _weather
+    val _weather: MutableStateFlow<ApiState> = MutableStateFlow(ApiState.Loading)
 
     suspend fun getMyWeatherStatus(latitude: Double, longitude: Double, language: String, units: String) {
-        try {
-            val weatherData = repo.getWeather(latitude, longitude, language, units)
-            _weather.postValue(weatherData)
-        } catch (e: Exception) {
-            Log.e("com.example.weather_app.Home.viewModel.HomeViewModel", "Error fetching weather data", e)
+        viewModelScope.launch {
+            repo.getWeather(latitude,longitude,language,units)
+                .catch { e ->
+                    _weather.value = ApiState.Failure(e)
+                }
+                .collect { weatherResponse ->
+                    _weather.value = ApiState.Success(weatherResponse)
+                }
         }
     }
 }

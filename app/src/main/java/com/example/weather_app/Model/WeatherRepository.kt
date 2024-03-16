@@ -11,5 +11,5 @@ interface WeatherRepository {
         units: String?="metric",
         lang:String?="en",
         appid: String?="111c965ece2127ae635f772022192953"
-    ): WeatherResponse
+    ): Flow<WeatherResponse>
 }

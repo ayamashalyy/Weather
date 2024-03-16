@@ -19,12 +19,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.weather_app.ApiState
 import com.example.weather_app.Home.viewModel.HomeViewModel
 import com.example.weather_app.Home.viewModel.HomeViewModelFactory
 import com.example.weather_app.Model.WeatherRepositoryImp
 import com.example.weather_app.R
 import com.example.weather_app.network.WeatherRemoteDataSourceImp
 import com.google.android.gms.location.*
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -86,22 +88,36 @@ class HomeFragment : Fragment() {
 
         val homeFactory = HomeViewModelFactory(WeatherRepositoryImp.getInstance(WeatherRemoteDataSourceImp.getInstance()))
         viewModel = ViewModelProvider(this, homeFactory).get(HomeViewModel::class.java)
+        lifecycleScope.launch {
+            viewModel._weather.collectLatest { result ->
+                when(result){
+                    is ApiState.Loading -> {
+                        Toast.makeText(requireContext(),"Loading...",Toast.LENGTH_SHORT).show()
+                    }
+                    is ApiState.Success -> {
+                        recyclerView.visibility = View.VISIBLE
+                        val weather = result.data
+                        city.text = weather.city.name
+                        hourAdapter.submitList(weather.list)
+                        dayAdapter.submitList(weather.list)
+                        date.text = weather.list.firstOrNull()?.let { SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH).format(SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(it.dt_txt)) }
+                        dec.text = weather.list.firstOrNull()?.weather?.firstOrNull()?.description ?: "No description available"
+                        temp.text = "${weather.list.firstOrNull()?.main?.temp}°C"
+                        Glide.with(this@HomeFragment)
+                            .load("https://openweathermap.org/img/wn/${weather.list[0].weather[0].icon}@2x.png")
+                            .into(image)
+                        humidity.text = "${weather.list.firstOrNull()?.main?.humidity.toString()}%"
+                        clouds.text = "${weather.list.firstOrNull()?.clouds?.all.toString()}%"
+                        pressure.text = "${weather.list.firstOrNull()?.main?.pressure.toString()}hpa"
+                        wind.text = "${weather.list.firstOrNull()?.wind?.speed.toString()}m/s"
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(),"Error loading weather data",Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
 
-        viewModel.weather.observe(viewLifecycleOwner, Observer { weather ->
-            city.text = weather.city.name
-            hourAdapter.submitList(weather.list)
-            dayAdapter.submitList(weather.list)
-            date.text = weather.list.firstOrNull()?.let { SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH).format(SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(it.dt_txt)) }
-            dec.text = weather.list.firstOrNull()?.weather?.firstOrNull()?.description ?: "No description available"
-            temp.text = "${weather.list.firstOrNull()?.main?.temp}°C"
-            Glide.with(this)
-                .load("https://openweathermap.org/img/wn/${weather.list[0].weather[0].icon}@2x.png")
-                .into(image)
-            humidity.text = "${weather.list.firstOrNull()?.main?.humidity.toString()}%"
-            clouds.text = "${weather.list.firstOrNull()?.clouds?.all.toString()}%"
-            pressure.text = "${weather.list.firstOrNull()?.main?.pressure.toString()}hpa"
-            wind.text = "${weather.list.firstOrNull()?.wind?.speed.toString()}m/s"
-        })
 
         getLocation()
     }

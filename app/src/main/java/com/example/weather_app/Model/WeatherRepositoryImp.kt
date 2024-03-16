@@ -2,6 +2,7 @@ package com.example.weather_app.Model
 
 import com.example.weather_app.network.WeatherRemoteDataSourceImp
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import retrofit2.Response
 
 class WeatherRepositoryImp private constructor(
@@ -29,8 +30,8 @@ class WeatherRepositoryImp private constructor(
         units: String?,
         lang: String?,
         appid: String?
-    ): WeatherResponse {
-      return  remoteSource.makeNetworkCall(lat, lon, units, lang, appid)
+    ): Flow<WeatherResponse> {
+      return flowOf(remoteSource.makeNetworkCall(lat, lon, units, lang, appid))
     }
 
 }
