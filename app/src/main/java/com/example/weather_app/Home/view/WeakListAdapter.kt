@@ -13,10 +13,14 @@ import com.bumptech.glide.Glide
 import com.example.weather_app.Model.ListWeather
 import com.example.weather_app.R
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class WeekListAdapter(private val context: Context) :
     ListAdapter<ListWeather, WeekListAdapter.ViewHolder>(ProductDiffCallback()) {
+
+    private val uniqueDays = mutableSetOf<String>()
+    private val filteredList = mutableListOf<ListWeather>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(context)
@@ -29,7 +33,11 @@ class WeekListAdapter(private val context: Context) :
 
         Glide.with(context).load("https://openweathermap.org/img/wn/${weather.weather[0].icon}.png")
             .into(holder.img)
-        holder.day.text = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(weather.dt_txt))
+
+        val date = Date(weather.dt * 1000L)
+        val dayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault()).format(date)
+        holder.day.text = dayOfWeek
+
         holder.temp.text = "${weather.main.temp}°C"
         holder.status.text = weather.weather[0].description
     }
@@ -39,6 +47,23 @@ class WeekListAdapter(private val context: Context) :
         val day: TextView = itemView.findViewById(R.id.weakly_day_txt)
         val temp: TextView = itemView.findViewById(R.id.weakly_temp_txt)
         val status:TextView = itemView.findViewById(R.id.weekly_weather_status_txt)
+    }
+
+    override fun submitList(list: List<ListWeather>?) {
+        list?.let {
+            filteredList.clear()
+            uniqueDays.clear()
+            it.forEach { weather ->
+                val date = Date(weather.dt * 1000L)
+                val dayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault()).format(date)
+                if (uniqueDays.add(dayOfWeek)) {
+                    filteredList.add(weather)
+                    if (uniqueDays.size >= 5)
+                        return@forEach
+                }
+            }
+            super.submitList(filteredList)
+        }
     }
 
     class ProductDiffCallback : DiffUtil.ItemCallback<ListWeather>() {

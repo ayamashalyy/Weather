@@ -1,4 +1,4 @@
-package com.example.weather_app
+package com.example.weather_app.Map.view
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -12,7 +12,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProvider
+import com.example.weather_app.Map.viewModel.MapViewModel
+import com.example.weather_app.Map.viewModel.MapViewModelFactory
+import com.example.weather_app.Model.FavLocation
+import com.example.weather_app.Model.WeatherRepositoryImp
+import com.example.weather_app.R
+import com.example.weather_app.dp.WeatherLocalDataSourceImp
+import com.example.weather_app.network.WeatherRemoteDataSourceImp
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -32,6 +41,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var currentLocation: Location
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var search: SearchView
+    private lateinit var viewModel:MapViewModel
+    private var isDialogOpen: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -43,12 +55,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_map, container, false)
+        val viewModelFactory  = MapViewModelFactory(WeatherRepositoryImp.getInstance(
+            WeatherRemoteDataSourceImp.getInstance(),
+            WeatherLocalDataSourceImp.getInstance(requireContext())))
+        viewModel = ViewModelProvider(this, viewModelFactory ).get(MapViewModel::class.java)
         search = view.findViewById(R.id.mapSearch)
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
         getLastLocation()
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
+                if (isDialogOpen) {
+                    return false
+                }
+
                 val location: String = search.query.toString()
                 var addressList: List<Address>? = null
                 if (!location.isNullOrEmpty()) {
@@ -73,6 +93,35 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+
+                    val alertDialog = AlertDialog.Builder(requireContext())
+                        .setTitle("Save ${addressList?.get(0)?.locality ?: "Unknown Location"}")
+                        .setMessage("Do you want to save this location?")
+                        .setPositiveButton("Save") { dialog, _ ->
+                            val place = addressList?.get(0)
+                            if (place != null) {
+                                val favLocation = FavLocation(place.latitude, place.longitude, place.getAddressLine(0))
+                                viewModel.addLocationToFav(favLocation)
+                                Toast.makeText(requireContext(), "Location saved successfully", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(requireContext(), "Error saving location", Toast.LENGTH_SHORT).show()
+                            }
+                            dialog.dismiss()
+                            isDialogOpen = false
+                        }
+                        .setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                            isDialogOpen = false
+                        }
+                        .create()
+                    alertDialog.show()
+                    isDialogOpen = true
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Location not found",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 return false
             }

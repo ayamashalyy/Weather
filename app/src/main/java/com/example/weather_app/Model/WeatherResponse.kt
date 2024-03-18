@@ -1,6 +1,12 @@
 package com.example.weather_app.Model
 
- data class WeatherResponse(
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "currentWeather")
+
+data class WeatherResponse(
     val list: List<ListWeather>,
-    val city: City
+    @PrimaryKey
+    val city: City,
 )

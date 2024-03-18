@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weather_app.ApiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repo: WeatherRepository) : ViewModel() {
@@ -26,4 +27,21 @@ class HomeViewModel(private val repo: WeatherRepository) : ViewModel() {
                 }
         }
     }
+    suspend fun insertCurrentWeatherInHome(weather:WeatherResponse){
+        viewModelScope.launch {
+            repo.insertCurrentWeather(weather)
+        }
+    }
+    fun getCurrentWeatherInHome() {
+        viewModelScope.launch {
+            repo.getStoredCurrentWeather()
+                .catch {
+                    _weather.value = ApiState.Failure(it)
+                }
+                .collect {
+                    _weather.value = ApiState.Success(it[0])
+                }
+        }
+    }
+
 }

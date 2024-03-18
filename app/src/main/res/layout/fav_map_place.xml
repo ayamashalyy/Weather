@@ -7,7 +7,7 @@
     android:layout_marginTop="20dp"
     android:layout_marginEnd="10dp"
     android:layout_marginStart="10dp"
-    app:cardBackgroundColor="@color/primaryColor"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="20dp"
     app:cardElevation="0dp">
 
@@ -23,7 +23,7 @@
             android:fontFamily="@font/acme"
             android:gravity="clip_vertical|center_horizontal"
             android:text="cairo"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
