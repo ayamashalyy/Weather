@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "currentWeather")
-
 data class WeatherResponse(
     val list: List<ListWeather>,
     @PrimaryKey

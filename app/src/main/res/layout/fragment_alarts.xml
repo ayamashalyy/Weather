@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="180dp"
             android:fontFamily="@font/acme"
-            android:text="no_alert_found"
+            android:text="@string/no_alert_found"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"

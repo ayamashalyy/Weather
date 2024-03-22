@@ -1,4 +1,5 @@
 package com.example.weather_app.Common
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -7,7 +8,6 @@ import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
-import com.example.weather_app.MainActivity
 import com.example.weather_app.R
 
 class OnboardingScreen : AppCompatActivity() {
@@ -21,8 +21,7 @@ class OnboardingScreen : AppCompatActivity() {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
+            WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
 
         if (restorePrefData()) {
@@ -52,8 +51,7 @@ class OnboardingScreen : AppCompatActivity() {
                 loadLastScreen()
             }
             val mainActivity = Intent(
-                applicationContext,
-                SplashScreen::class.java
+                applicationContext, SplashScreen::class.java
             )
             startActivity(mainActivity)
             savePrefsData()

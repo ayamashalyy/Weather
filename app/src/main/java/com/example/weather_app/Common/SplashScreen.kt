@@ -1,4 +1,5 @@
 package com.example.weather_app.Common
+
 import com.example.weather_app.Home.view.HomeFragment
 import android.content.Intent
 import android.os.Bundle

@@ -10,16 +10,11 @@ data class FavLocation(
     val latitude: Double,
     val longitude: Double,
     val address: String?,
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0
-):Parcelable {
+    @PrimaryKey(autoGenerate = true) val id: Int = 0
+) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readDouble(),
-        parcel.readDouble(),
-        parcel.readString(),
-        parcel.readInt()
-    ) {
-    }
+        parcel.readDouble(), parcel.readDouble(), parcel.readString(), parcel.readInt()
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeDouble(latitude)

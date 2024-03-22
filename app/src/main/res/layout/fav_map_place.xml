@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/acme"
             android:gravity="clip_vertical|center_horizontal"
-            android:text="cairo"
+            android:text="@string/cairo"
             android:textColor="@color/black"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"

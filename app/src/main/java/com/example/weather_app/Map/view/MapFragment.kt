@@ -41,24 +41,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var currentLocation: Location
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var search: SearchView
-    private lateinit var viewModel:MapViewModel
+    private lateinit var viewModel: MapViewModel
     private var isDialogOpen: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
+        arguments?.let {}
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_map, container, false)
-        val viewModelFactory  = MapViewModelFactory(WeatherRepositoryImp.getInstance(
-            WeatherRemoteDataSourceImp.getInstance(),
-            WeatherLocalDataSourceImp.getInstance(requireContext())))
-        viewModel = ViewModelProvider(this, viewModelFactory ).get(MapViewModel::class.java)
+        val viewModelFactory = MapViewModelFactory(
+            WeatherRepositoryImp.getInstance(
+                WeatherRemoteDataSourceImp.getInstance(),
+                WeatherLocalDataSourceImp.getInstance(requireContext())
+            )
+        )
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MapViewModel::class.java)
         search = view.findViewById(R.id.mapSearch)
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
@@ -88,9 +89,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10F))
                     } else {
                         Toast.makeText(
-                            requireContext(),
-                            "Location not found",
-                            Toast.LENGTH_SHORT
+                            requireContext(), "Location not found", Toast.LENGTH_SHORT
                         ).show()
                     }
 
@@ -100,27 +99,31 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         .setPositiveButton("Save") { dialog, _ ->
                             val place = addressList?.get(0)
                             if (place != null) {
-                                val favLocation = FavLocation(place.latitude, place.longitude, place.getAddressLine(0))
+                                val favLocation = FavLocation(
+                                    place.latitude, place.longitude, place.getAddressLine(0)
+                                )
                                 viewModel.addLocationToFav(favLocation)
-                                Toast.makeText(requireContext(), "Location saved successfully", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Location saved successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             } else {
-                                Toast.makeText(requireContext(), "Error saving location", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(), "Error saving location", Toast.LENGTH_SHORT
+                                ).show()
                             }
                             dialog.dismiss()
                             isDialogOpen = false
-                        }
-                        .setNegativeButton("Cancel") { dialog, _ ->
+                        }.setNegativeButton("Cancel") { dialog, _ ->
                             dialog.dismiss()
                             isDialogOpen = false
-                        }
-                        .create()
+                        }.create()
                     alertDialog.show()
                     isDialogOpen = true
                 } else {
                     Toast.makeText(
-                        requireContext(),
-                        "Location not found",
-                        Toast.LENGTH_SHORT
+                        requireContext(), "Location not found", Toast.LENGTH_SHORT
                     ).show()
                 }
                 return false
@@ -130,8 +133,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 return false
             }
         })
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.mapview) as? SupportMapFragment
+        val mapFragment = childFragmentManager.findFragmentById(R.id.mapview) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
         return view
@@ -139,11 +141,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun getLastLocation() {
         if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
@@ -166,9 +166,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == FINE_PERMISSION_CODE) {

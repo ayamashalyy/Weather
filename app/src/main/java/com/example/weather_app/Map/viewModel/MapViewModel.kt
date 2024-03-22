@@ -7,8 +7,8 @@ import com.example.weather_app.Model.WeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MapViewModel (private val _repo: WeatherRepository) : ViewModel(){
-    fun addLocationToFav(favLocation: FavLocation){
+class MapViewModel(private val _repo: WeatherRepository) : ViewModel() {
+    fun addLocationToFav(favLocation: FavLocation) {
         viewModelScope.launch(Dispatchers.IO) {
             _repo.insertLocation(favLocation)
         }

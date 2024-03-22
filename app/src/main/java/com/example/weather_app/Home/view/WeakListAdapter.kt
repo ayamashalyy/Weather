@@ -46,7 +46,7 @@ class WeekListAdapter(private val context: Context) :
         val img: ImageView = itemView.findViewById(R.id.weaklyWeatherImg)
         val day: TextView = itemView.findViewById(R.id.weakly_day_txt)
         val temp: TextView = itemView.findViewById(R.id.weakly_temp_txt)
-        val status:TextView = itemView.findViewById(R.id.weekly_weather_status_txt)
+        val status: TextView = itemView.findViewById(R.id.weekly_weather_status_txt)
     }
 
     override fun submitList(list: List<ListWeather>?) {
@@ -58,8 +58,7 @@ class WeekListAdapter(private val context: Context) :
                 val dayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault()).format(date)
                 if (uniqueDays.add(dayOfWeek)) {
                     filteredList.add(weather)
-                    if (uniqueDays.size >= 5)
-                        return@forEach
+                    if (uniqueDays.size >= 5) return@forEach
                 }
             }
             super.submitList(filteredList)

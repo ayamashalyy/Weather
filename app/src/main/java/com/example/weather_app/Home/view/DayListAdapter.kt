@@ -29,7 +29,9 @@ class DayListAdapter(private val context: Context) :
 
         Glide.with(context).load("https://openweathermap.org/img/wn/${weather.weather[0].icon}.png")
             .into(holder.img)
-        holder.hour.text = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(weather.dt_txt))
+        holder.hour.text = SimpleDateFormat(
+            "hh:mm a", Locale.getDefault()
+        ).format(SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(weather.dt_txt))
         holder.temp.text = "${weather.main.temp}°C"
     }
 

@@ -6,11 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weather_app.Model.FavLocation
 import com.example.weather_app.Model.WeatherRepository
-import com.example.weather_app.Model.WeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class FavWeatherViewModel (private val repo: WeatherRepository) : ViewModel() {
+class FavWeatherViewModel(private val repo: WeatherRepository) : ViewModel() {
     private val _weather: MutableLiveData<List<FavLocation>> = MutableLiveData()
     val weather: LiveData<List<FavLocation>> get() = _weather
 

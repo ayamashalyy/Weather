@@ -13,6 +13,7 @@ class WeatherLocalDataSourceImp private constructor(context: Context) {
         val db: AppDataBase = AppDataBase.getInstance(context)
         db.getWeatherDao()
     }
+
     companion object {
         private var localSource: WeatherLocalDataSourceImp? = null
 
@@ -23,9 +24,11 @@ class WeatherLocalDataSourceImp private constructor(context: Context) {
             return localSource!!
         }
     }
+
     fun getAllStoredLocations(): Flow<List<FavLocation>> {
         return weatherDAO.getAllLocations()
     }
+
     fun deleteLocation(location: FavLocation) {
         CoroutineScope(Dispatchers.IO).launch {
             weatherDAO.deleteLocation(location)
@@ -37,9 +40,11 @@ class WeatherLocalDataSourceImp private constructor(context: Context) {
             weatherDAO.insertLocation(location)
         }
     }
+
     fun getAllStoredCurrentWeather(): Flow<List<WeatherResponse>> {
         return weatherDAO.getAllCurrentWeather()
     }
+
     fun deleteCurrentWeather(weather: WeatherResponse) {
         CoroutineScope(Dispatchers.IO).launch {
             weatherDAO.deleteCurrentWeather(weather)

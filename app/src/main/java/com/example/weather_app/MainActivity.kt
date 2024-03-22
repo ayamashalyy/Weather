@@ -19,14 +19,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val fragmentName = intent.getStringExtra("fragment")
         val fragment = Class.forName(fragmentName).newInstance() as Fragment
-
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
         val navView = findViewById<NavigationView>(R.id.navView)
         navView.setItemIconTintList(null)
 
-        toggle = ActionBarDrawerToggle(this, findViewById(R.id.drawerLayout), R.string.open_nav, R.string.close_nav)
+        toggle = ActionBarDrawerToggle(
+            this,
+            findViewById(R.id.drawerLayout),
+            R.string.open_nav,
+            R.string.close_nav
+        )
         findViewById<DrawerLayout>(R.id.drawerLayout).addDrawerListener(toggle)
         toggle.syncState()
 
@@ -40,24 +44,28 @@ class MainActivity : AppCompatActivity() {
                     findViewById<DrawerLayout>(R.id.drawerLayout).closeDrawer(GravityCompat.START)
                     true
                 }
+
                 R.id.nav_Favourites -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, FavoritesFragment()).commit()
                     findViewById<DrawerLayout>(R.id.drawerLayout).closeDrawer(GravityCompat.START)
                     true
                 }
+
                 R.id.nav_Alerts -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, AlartsFragment()).commit()
+                        .replace(R.id.fragment_container, AlertsFragment()).commit()
                     findViewById<DrawerLayout>(R.id.drawerLayout).closeDrawer(GravityCompat.START)
                     true
                 }
+
                 R.id.nav_Settings -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, SettingsFragment()).commit()
                     findViewById<DrawerLayout>(R.id.drawerLayout).closeDrawer(GravityCompat.START)
                     true
                 }
+
                 else -> false
             }
         }

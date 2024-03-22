@@ -9,8 +9,7 @@ class FavWeatherViewModelFactory(private val repo: WeatherRepository) : ViewMode
         return if (modelClass.isAssignableFrom(FavWeatherViewModel::class.java)) {
             FavWeatherViewModel(repo) as T
 
-        }
-        else{
+        } else {
             throw IllegalArgumentException("viewModel Class Not Found")
         }
     }

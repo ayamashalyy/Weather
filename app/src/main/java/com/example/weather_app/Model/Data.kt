@@ -1,8 +1,5 @@
 package com.example.weather_app.Model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
 
 data class ListWeather(
     val dt: Long,

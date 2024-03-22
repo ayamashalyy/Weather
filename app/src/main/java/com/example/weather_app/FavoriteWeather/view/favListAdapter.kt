@@ -5,10 +5,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -38,17 +36,14 @@ class favListAdapter(private val context: Context, private val listener: OnFavor
         holder.delete.setOnClickListener {
 
             val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-            builder
-                .setTitle("Are you sure you want to delete this Place?")
+            builder.setTitle("Are you sure you want to delete this Place?")
                 .setPositiveButton("OK") { dialog, which ->
                     listener.deleteLocations(weather)
                 }
 
                 .setNegativeButton("Cancel") { dialog, which ->
                     dialog.dismiss()
-                }
-                .setCancelable(false)
-                .show()
+                }.setCancelable(false).show()
 
         }
         holder.card.setOnClickListener {

@@ -1,4 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home">Home</string>
+    <string name="Location">Location</string>
+    <string name="Gps">Gps</string>
+    <string name="Map">Map</string>
+    <string name="English">English</string>
+    <string name="Arabic">Arabic</string>
+    <string name="kelvin">kelvin</string>
+    <string name="Celsius">Celsius</string>
+    <string name="Fahrenheit">Fahrenheit</string>
+    <string name="Wind_Speed">Wind Speed</string>
+    <string name="miles_hour">miles/hour</string>
+    <string name="meter_sec">meter/sec</string>
+    <string name="language">Language</string>
+    <string name="temperature">Temperature</string>
+    <string name="next">Next</string>
+    <string name="select_date">Select Date</string>
+    <string name="from">from</string>
+    <string name="to">to</string>
+    <string name="alarm">Alarm</string>
+    <string name="notification">Notification</string>
+    <string name="save">Save</string>
+    <string name="_14_03_2024">14/03/2024</string>
+    <string name="date">date</string>
+    <string name="cairo">cairo</string>
+    <string name="no_alert_found">no_alert_found</string>
+    <string name="alex">Alex</string>
+    <string name="fri_26_fab">Fri,26 Fab</string>
+    <string name="clear_sky">Clear sky</string>
+    <string name="_12_c">12°C</string>
+    <string name="humidity">Humidity</string>
+    <string name="cloud">Cloud</string>
+    <string name="pressure">Pressure</string>
+    <string name="wind">Wind</string>
+    <string name="_6_am">6 AM</string>
+    <string name="_16_c">16°C</string>
+    <string name="weather_alert">Weather Alert</string>
+    <string name="weather_is_fine_no_alerts_for_the_scheduled_time_period">Weather is fine , no alerts for the scheduled time period</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="saturday">Saturday</string>
+    <string name="_22_16_c">22/16°C</string>
 </resources>
