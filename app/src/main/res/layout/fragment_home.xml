@@ -47,17 +47,16 @@
 
         <TextView
             android:id="@+id/date_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="87dp"
+            android:layout_height="19dp"
             android:layout_marginBottom="28dp"
             android:fontFamily="@font/acme"
-            android:text=""
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/cardView"
             app:layout_constraintEnd_toEndOf="@+id/city_name_txt"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.39"
             app:layout_constraintStart_toStartOf="@+id/city_name_txt" />
 
         <androidx.cardview.widget.CardView
@@ -142,10 +141,10 @@
 
                 <ImageView
                     android:id="@+id/imageView5"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="45dp"
+                    android:layout_height="59dp"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="28dp"
                     android:src="@drawable/humidity"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -190,7 +189,7 @@
                     android:id="@+id/imageView8"
                     android:layout_width="84dp"
                     android:layout_height="63dp"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="12dp"
                     android:src="@drawable/pressure"
                     app:layout_constraintStart_toEndOf="@+id/imageView7"
                     app:layout_constraintTop_toTopOf="@+id/imageView7" />
@@ -210,9 +209,9 @@
 
                 <ImageView
                     android:id="@+id/imageView9"
-                    android:layout_width="71dp"
-                    android:layout_height="63dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_width="74dp"
+                    android:layout_height="57dp"
+                    android:layout_marginStart="8dp"
                     android:src="@drawable/sun"
                     app:layout_constraintStart_toEndOf="@+id/imageView8"
                     app:layout_constraintTop_toTopOf="@+id/imageView8" />
@@ -221,7 +220,7 @@
                     android:id="@+id/wind_txt"
                     android:layout_width="71dp"
                     android:layout_height="24dp"
-                    android:layout_marginTop="60dp"
+                    android:layout_marginTop="56dp"
                     android:textColor="@color/black"
                     android:textSize="15sp"
                     android:textStyle="bold"
@@ -283,8 +282,10 @@
                     android:textStyle="bold|italic"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/wind_txt"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/wind_txt" />
+                    app:layout_constraintHorizontal_bias="0.538"
+                    app:layout_constraintStart_toStartOf="@+id/wind_txt"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView9"
+                    app:layout_constraintVertical_bias="0.928" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

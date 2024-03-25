@@ -1,5 +1,7 @@
 package com.example.weather_app
 
+import android.content.Context
+import com.example.weather_app.Map.view.MapSettings
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -8,7 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.weather_app.Home.view.HomeFragment
 import com.example.weather_app.utils.SettingsManager
 import java.util.Locale
 
@@ -26,29 +30,53 @@ class SettingsFragment : Fragment() {
         view.findViewById<RadioGroup>(R.id.location_radio_group)
             .setOnCheckedChangeListener { _, checkedId ->
                 val location = when (checkedId) {
-                    R.id.radio_gps -> "GPS"
-                    R.id.radio_map -> "Map"
+                    R.id.radio_gps -> {
+                        if (settingsManager.getSelectedLocation() != "GPS") {
+                            val sharedPreferences = requireContext().getSharedPreferences("location", Context.MODE_PRIVATE)
+                            sharedPreferences.edit().putString("latitude", "0").apply()
+                            sharedPreferences.edit().putString("longitude", "0").apply()
+                            requireActivity().supportFragmentManager.beginTransaction()
+                                .replace(R.id.fragment_container, HomeFragment())
+                                .commit()
+                            settingsManager.saveSelectedLocation("GPS")
+                        }
+                        "GPS"
+                    }
+                    R.id.radio_map -> {
+                        if (settingsManager.getSelectedLocation() != "Map") {
+                            requireActivity().supportFragmentManager.beginTransaction()
+                                .replace(R.id.fragment_container, MapSettings())
+                                .commit()
+                            settingsManager.saveSelectedLocation("Map")
+                        }
+                        "Map"
+                    }
                     else -> "GPS"
                 }
-                settingsManager.saveSelectedLocation(location)
             }
+
 
         view.findViewById<RadioGroup>(R.id.language_radio_group)
             .setOnCheckedChangeListener { _, checkedId ->
                 val language = when (checkedId) {
-                    R.id.radio_Eg -> {
+                    R.id.radio_Eg -> { if (settingsManager.getSelectedLocation() != "en") {
                         local("en")
+                        settingsManager.saveSelectedLanguage("en")
+                    }
                         "en"
-                    }
 
+                    }
                     R.id.radio_Ar -> {
-                        local("ar")
-                        "ar"
-                    }
+                        if (settingsManager.getSelectedLocation() != "ar") {
+                            local("ar")
+                            settingsManager.saveSelectedLanguage("ar")
 
+                        }
+                        "ar"
+
+                    }
                     else -> "en"
                 }
-                settingsManager.saveSelectedLanguage(language)
             }
 
         view.findViewById<RadioGroup>(R.id.Temperature_radio_group)
@@ -65,9 +93,9 @@ class SettingsFragment : Fragment() {
         view.findViewById<RadioGroup>(R.id.wind_speed_radio_group)
             .setOnCheckedChangeListener { _, checkedId ->
                 val unit = when (checkedId) {
-                    R.id.radio_miles_hour -> "Miles/hour"
-                    R.id.radio_meter_sec -> "Meter/sec"
-                    else -> "Meter/sec"
+                    R.id.radio_miles_hour -> "m/h"
+                    R.id.radio_meter_sec -> "m/s"
+                    else -> "m/s"
                 }
                 settingsManager.saveSelectedWindSpeedUnit(unit)
             }
@@ -89,27 +117,27 @@ class SettingsFragment : Fragment() {
         val savedLanguage = settingsManager.getSelectedLanguage()
         if (savedLanguage != null) {
             when (savedLanguage) {
-                "English" -> view.findViewById<RadioButton>(R.id.radio_Eg).isChecked = true
-                "Arabic" -> view.findViewById<RadioButton>(R.id.radio_Ar).isChecked = true
+                "en" -> view.findViewById<RadioButton>(R.id.radio_Eg).isChecked = true
+                "ar" -> view.findViewById<RadioButton>(R.id.radio_Ar).isChecked = true
             }
         }
 
         val savedTemperatureUnit = settingsManager.getSelectedTemperatureUnit()
         if (savedTemperatureUnit != null) {
             when (savedTemperatureUnit) {
-                "Kelvin" -> view.findViewById<RadioButton>(R.id.radio_K).isChecked = true
-                "Celsius" -> view.findViewById<RadioButton>(R.id.radio_C).isChecked = true
-                "Fahrenheit" -> view.findViewById<RadioButton>(R.id.radio_F).isChecked = true
+                "standard" -> view.findViewById<RadioButton>(R.id.radio_K).isChecked = true
+                "metric" -> view.findViewById<RadioButton>(R.id.radio_C).isChecked = true
+                "imperial" -> view.findViewById<RadioButton>(R.id.radio_F).isChecked = true
             }
         }
 
         val savedWindSpeedUnit = settingsManager.getSelectedWindSpeedUnit()
         if (savedWindSpeedUnit != null) {
             when (savedWindSpeedUnit) {
-                "Miles/hour" -> view.findViewById<RadioButton>(R.id.radio_miles_hour).isChecked =
+                "m/h" -> view.findViewById<RadioButton>(R.id.radio_miles_hour).isChecked =
                     true
 
-                "Meter/sec" -> view.findViewById<RadioButton>(R.id.radio_meter_sec).isChecked = true
+                "m/s" -> view.findViewById<RadioButton>(R.id.radio_meter_sec).isChecked = true
             }
         }
     }
@@ -125,8 +153,8 @@ class SettingsFragment : Fragment() {
             config.locale = Locale(language)
         }
         resources.updateConfiguration(config, dm)
-        requireActivity().recreate()
     }
+
 }
 
 

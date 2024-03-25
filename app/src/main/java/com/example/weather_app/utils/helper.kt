@@ -18,7 +18,7 @@ class SettingsManager(context: Context) {
     }
 
     fun getSelectedLocation(): String {
-        return sharedPreferences.getString(KEY_SELECTED_LOCATION, null)!!
+        return sharedPreferences.getString(KEY_SELECTED_LOCATION, "GPS")!!
     }
 
     fun saveSelectedLanguage(language: String) {

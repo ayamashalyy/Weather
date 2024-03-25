@@ -12,11 +12,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weather_app.Model.ListWeather
 import com.example.weather_app.R
+import com.example.weather_app.utils.Constants
+import com.example.weather_app.utils.SettingsManager
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class DayListAdapter(private val context: Context) :
     ListAdapter<ListWeather, DayListAdapter.ViewHolder>(ProductDiffCallback()) {
+    private var settingsManager = SettingsManager(context)
+    private var unit: String = Constants.CELSIUE
+
+    fun updateUnit(newUnit: String) {
+        unit = newUnit
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(context)
@@ -30,9 +39,17 @@ class DayListAdapter(private val context: Context) :
         Glide.with(context).load("https://openweathermap.org/img/wn/${weather.weather[0].icon}.png")
             .into(holder.img)
         holder.hour.text = SimpleDateFormat(
-            "hh:mm a", Locale.getDefault()
-        ).format(SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(weather.dt_txt))
-        holder.temp.text = "${weather.main.temp}°C"
+            "hh:mm a", Locale(settingsManager.getSelectedLanguage())
+        ).format(SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale(settingsManager.getSelectedLanguage())).parse(weather.dt_txt))
+
+        val temperatureInCelsius = weather.main.temp.toInt()
+        val temperatureString = when (unit) {
+            "metric" -> "${temperatureInCelsius}\u2103"
+            "standard" -> "${temperatureInCelsius}\u212A"
+            "imperial" -> "${temperatureInCelsius}\u2109"
+            else -> "${temperatureInCelsius}\u2103"
+        }
+        holder.temp.text = temperatureString
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -1,5 +1,6 @@
 package com.example.weather_app
 
+import com.example.weather_app.Map.view.MapSettings
 import com.example.weather_app.Home.view.HomeFragment
 import android.os.Bundle
 import android.view.MenuItem

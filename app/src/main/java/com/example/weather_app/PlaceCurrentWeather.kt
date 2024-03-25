@@ -1,15 +1,13 @@
 package com.example.weather_app
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
-import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,8 +19,12 @@ import com.example.weather_app.Home.viewModel.HomeViewModel
 import com.example.weather_app.Home.viewModel.HomeViewModelFactory
 import com.example.weather_app.Model.FavLocation
 import com.example.weather_app.Model.WeatherRepositoryImp
+import com.example.weather_app.Model.WeatherResponse
+import com.example.weather_app.databinding.FragmentHomeBinding
 import com.example.weather_app.dp.WeatherLocalDataSourceImp
 import com.example.weather_app.network.WeatherRemoteDataSourceImp
+import com.example.weather_app.utils.Constants
+import com.example.weather_app.utils.SettingsManager
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -30,21 +32,12 @@ import java.util.Locale
 
 open class PlaceCurrentWeather : Fragment() {
     private lateinit var viewModel: HomeViewModel
-    private lateinit var city: TextView
-    private lateinit var date: TextView
-    private lateinit var dec: TextView
-    private lateinit var temp: TextView
-    private lateinit var image: ImageView
-    private lateinit var humidity: TextView
-    private lateinit var clouds: TextView
-    private lateinit var pressure: TextView
-    private lateinit var wind: TextView
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var recyclerViewday: RecyclerView
-    private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var binding: FragmentHomeBinding
     private lateinit var hourAdapter: DayListAdapter
     private lateinit var dayAdapter: WeekListAdapter
-    private lateinit var card: CardView
+    private var unit: String = Constants.CELSIUE
+    private var language: String = Constants.ARABIC
+    private lateinit var settingsManager: SettingsManager
 
     var long: Double? = 0.0
     var lat: Double? = 0.0
@@ -58,25 +51,15 @@ open class PlaceCurrentWeather : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-        city = view.findViewById(R.id.city_name_txt)
-        date = view.findViewById(R.id.date_txt)
-        dec = view.findViewById(R.id.temp_desc)
-        temp = view.findViewById(R.id.temp_txt)
-        image = view.findViewById(R.id.weatherImg)
-        humidity = view.findViewById(R.id.humidity_txt)
-        clouds = view.findViewById(R.id.clouds_txt)
-        pressure = view.findViewById(R.id.pressure_txt)
-        wind = view.findViewById(R.id.wind_txt)
-        recyclerView = view.findViewById(R.id.hourly_weather_recycler)
-        recyclerViewday = view.findViewById(R.id.week_weather_recycler)
-        card = view.findViewById(R.id.home_details_card)
-        setUpRecyclerView()
-        return view
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpRecyclerView()
+        settingsManager = SettingsManager(requireContext())
+        applySavedSettings()
         val bundle = arguments
         if (bundle != null) {
             val data = bundle.getParcelable<FavLocation>("cardViewId")
@@ -94,39 +77,56 @@ open class PlaceCurrentWeather : Fragment() {
         progressBar.visibility = View.VISIBLE
         viewModel = ViewModelProvider(this, homeFactory).get(HomeViewModel::class.java)
         lifecycleScope.launch {
-            viewModel.getMyWeatherStatus(lat!!, long!!, "en", "K")
+            viewModel.getMyWeatherStatus(lat!!, long!!, unit, language)
             viewModel._weather.collectLatest { result ->
                 when (result) {
                     is ApiState.Loading -> {
                         progressBar.visibility = View.VISIBLE
-                        card.visibility = View.INVISIBLE
+                        binding.homeDetailsCard.visibility = View.INVISIBLE
                         Toast.makeText(requireContext(), "Loading...", Toast.LENGTH_SHORT).show()
                     }
 
                     is ApiState.Success -> {
                         progressBar.visibility = View.GONE
-                        card.visibility = View.VISIBLE
-                        recyclerView.visibility = View.VISIBLE
+                        binding.homeDetailsCard.visibility = View.VISIBLE
+                        binding.hourlyWeatherRecycler.visibility = View.VISIBLE
                         val weather = result.data
-                        city.text = weather.city.name
+                        binding.cityNameTxt.text = weather.city.name
                         hourAdapter.submitList(weather.list)
+                        hourAdapter.updateUnit(unit)
                         dayAdapter.submitList(weather.list)
-                        date.text = weather.list.firstOrNull()?.let {
-                            SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH).format(
-                                SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(it.dt_txt)
+                        dayAdapter.updateUnit(unit)
+                        binding.dateTxt.text = weather.list.firstOrNull()?.let {
+                            SimpleDateFormat(
+                                "dd MMM yyyy", Locale(settingsManager.getSelectedLanguage())
+                            ).format(
+                                SimpleDateFormat(
+                                    "yyyy-MM-dd", Locale(settingsManager.getSelectedLanguage())
+                                ).parse(it.dt_txt)
                             )
                         }
-                        dec.text = weather.list.firstOrNull()?.weather?.firstOrNull()?.description
-                            ?: "No description available"
-                        temp.text = "${weather.list.firstOrNull()?.main?.temp}°C"
+                        binding.tempDesc.text =
+                            weather.list.firstOrNull()?.weather?.firstOrNull()?.description
+                                ?: "No description available"
+                        val temperatureInCelsius = weather.list.firstOrNull()?.main?.temp
+                        val temperatureString = when (unit) {
+                            "metric" -> "${temperatureInCelsius}\u2103"
+                            "standard" -> "${temperatureInCelsius}\u212A"
+                            "imperial" -> "${temperatureInCelsius}\u2109"
+                            else -> "${temperatureInCelsius}\u212A"
+                        }
+                        binding.tempTxt.text = temperatureString
                         Glide.with(this@PlaceCurrentWeather)
                             .load("https://openweathermap.org/img/wn/${weather.list[0].weather[0].icon}@2x.png")
-                            .into(image)
-                        humidity.text = "${weather.list.firstOrNull()?.main?.humidity.toString()}%"
-                        clouds.text = "${weather.list.firstOrNull()?.clouds?.all.toString()}%"
-                        pressure.text =
+                            .into(binding.weatherImg)
+                        binding.humidityTxt.text =
+                            "${weather.list.firstOrNull()?.main?.humidity.toString()}%"
+                        binding.cloudsTxt.text =
+                            "${weather.list.firstOrNull()?.clouds?.all.toString()}%"
+                        binding.pressureTxt.text =
                             "${weather.list.firstOrNull()?.main?.pressure.toString()}hpa"
-                        wind.text = "${weather.list.firstOrNull()?.wind?.speed.toString()}m/s"
+                        updateWindSpeedDisplay(weather)
+
                     }
 
                     else -> {
@@ -141,15 +141,53 @@ open class PlaceCurrentWeather : Fragment() {
 
 
     private fun setUpRecyclerView() {
-        linearLayoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+        binding.hourlyWeatherRecycler.layoutManager =
+            LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
         hourAdapter = DayListAdapter(requireContext())
-        recyclerView.adapter = hourAdapter
-        recyclerView.layoutManager = linearLayoutManager
+        binding.hourlyWeatherRecycler.adapter = hourAdapter
 
-        val weekLinearLayoutManager =
+        binding.weekWeatherRecycler.layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
         dayAdapter = WeekListAdapter(requireContext())
-        recyclerViewday.adapter = dayAdapter
-        recyclerViewday.layoutManager = weekLinearLayoutManager
+        binding.weekWeatherRecycler.adapter = dayAdapter
     }
+
+    private fun applySavedSettings() {
+        language = settingsManager.getSelectedLanguage()
+        unit = settingsManager.getSelectedTemperatureUnit()
+        Log.i("TAG", "$language ")
+        if (unit != unit) {
+            unit = unit
+            updateTemperatureDisplay()
+        }
+    }
+
+    private fun updateTemperatureDisplay() {
+        val temperatureInCelsius = binding.tempTxt.text.toString().replace("°C", "").toInt()
+        val temperatureString = when (unit) {
+            "metric" -> "${temperatureInCelsius}\u2103"
+            "standard" -> "${temperatureInCelsius}\u212A"
+            "imperial" -> "${temperatureInCelsius}\u2109"
+            else -> "${temperatureInCelsius}\u212A"
+        }
+        binding.tempTxt.text = temperatureString
+    }
+
+
+    private fun updateWindSpeedDisplay(weather: WeatherResponse) {
+        val windSpeedUnit = settingsManager.getSelectedWindSpeedUnit()
+        val windSpeed = weather.list.firstOrNull()?.wind?.speed ?: 0.0
+        val formattedWindSpeed = windSpeedUnit?.let { convertWindSpeed(windSpeed, it) }
+        binding.windTxt.text = formattedWindSpeed
+    }
+
+    private fun convertWindSpeed(speed: Double, unit: String): String {
+        return when (unit) {
+            Constants.METRIC_WIND_SPEED_UNIT -> "${speed} m/h"
+            Constants.MILES_WIND_SPEED_UNIT -> "${speed * 2} m/s"
+            else -> "${speed} m/s"
+        }
+    }
+
+
 }

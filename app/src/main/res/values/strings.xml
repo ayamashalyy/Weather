@@ -44,7 +44,7 @@
     <string name="_6_am">6 AM</string>
     <string name="_16_c" translatable="false">16°C</string>
     <string name="weather_alert">Weather Alert</string>
-    <string name="weather_is_fine_no_alerts_for_the_scheduled_time_period" >Weather is fine , no alerts for the scheduled time period</string>
+    <string name="weather_is_fine_no_alerts_for_the_scheduled_time_period">Weather is fine , no alerts for the scheduled time period</string>
     <string name="dismiss">Dismiss</string>
     <string name="saturday">Saturday</string>
     <string name="_22_16_c">22/16°C</string>
