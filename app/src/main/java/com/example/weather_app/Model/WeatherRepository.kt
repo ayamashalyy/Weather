@@ -9,6 +9,9 @@ interface WeatherRepository {
     suspend fun insertCurrentWeather(weather: WeatherResponse)
     suspend fun deleteCurrentWeather(weather: WeatherResponse)
     fun getStoredCurrentWeather(): Flow<List<WeatherResponse>>
+    suspend fun insertAlert(alertModel: AlertModel)
+    suspend fun deleteAlert(alertDetails: AlertModel)
+    suspend fun getAllAlerts(): Flow<List<AlertModel>>
     suspend fun getWeather(
         lat: Double,
         lon: Double,

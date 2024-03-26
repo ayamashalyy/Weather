@@ -153,6 +153,7 @@ class SettingsFragment : Fragment() {
             config.locale = Locale(language)
         }
         resources.updateConfiguration(config, dm)
+
     }
 
 }

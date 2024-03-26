@@ -31,4 +31,5 @@ class FavWeatherViewModel(private val repo: WeatherRepository) : ViewModel() {
             }
         }
     }
+
 }

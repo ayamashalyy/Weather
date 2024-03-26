@@ -2,25 +2,24 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:layout_marginRight="100dp"
+    android:layout_width="390dp"
+    android:layout_height="400dp"
     android:layout_marginLeft="10dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginRight="50dp"
     app:cardBackgroundColor="@color/dark_blue"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="0dp">
+    app:cardElevation="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="390dp"
+        android:layout_height="400dp"
         android:padding="16dp">
 
         <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="96dp"
+            android:layout_marginStart="144dp"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/acme"
             android:text="@string/select_date"
@@ -33,7 +32,7 @@
             android:id="@+id/calender_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="@+id/textView6"
             app:layout_constraintTop_toBottomOf="@+id/textView6"
             app:srcCompat="@drawable/schedule" />
@@ -52,7 +51,7 @@
             android:id="@+id/textView12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="2dp"
             android:layout_marginTop="20dp"
             android:fontFamily="@font/acme"
             android:text="@string/from"
@@ -66,10 +65,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:text="00:00"
             app:layout_constraintBottom_toBottomOf="@+id/alert_from_txt"
             app:layout_constraintEnd_toStartOf="@+id/textView12"
+            app:layout_constraintHorizontal_bias="0.66"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView12"
+            app:layout_constraintVertical_bias="0.615"
             app:srcCompat="@drawable/clock" />
 
         <TextView
@@ -100,8 +102,8 @@
             android:id="@+id/to_time_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="28dp"
             app:layout_constraintEnd_toStartOf="@+id/alert_to_txt"
             app:layout_constraintTop_toBottomOf="@+id/textView16"
             app:srcCompat="@drawable/clock" />
@@ -119,10 +121,11 @@
             android:id="@+id/alert_radio_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="36dp"
             android:orientation="horizontal"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.406"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/alert_from_txt">
 

@@ -1,6 +1,7 @@
 package com.example.weather_app.dp
 
 import android.content.Context
+import com.example.weather_app.Model.AlertModel
 import com.example.weather_app.Model.FavLocation
 import com.example.weather_app.Model.WeatherResponse
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +55,22 @@ class WeatherLocalDataSourceImp private constructor(context: Context) {
     fun insertCurrentWeather(weather: WeatherResponse) {
         CoroutineScope(Dispatchers.IO).launch {
             weatherDAO.insertCurrentWeather(weather)
+        }
+    }
+
+    fun insertAlert(alert: AlertModel) {
+        CoroutineScope(Dispatchers.IO).launch {
+            weatherDAO.insertAlert(alert)
+        }
+    }
+
+    fun getAllAlerts(): Flow<List<AlertModel>> {
+        return weatherDAO.allAlerts()
+    }
+
+    fun deleteAlert(alert: AlertModel) {
+        CoroutineScope(Dispatchers.IO).launch {
+            weatherDAO.deleteAlert(alert)
         }
     }
 

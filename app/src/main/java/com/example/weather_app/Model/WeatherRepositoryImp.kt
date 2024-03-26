@@ -50,6 +50,18 @@ class WeatherRepositoryImp private constructor(
         return localDataSource.getAllStoredCurrentWeather()
     }
 
+    override suspend fun insertAlert(alertModel: AlertModel) {
+        localDataSource.insertAlert(alertModel)
+    }
+
+    override suspend fun deleteAlert(alertDetails: AlertModel) {
+        localDataSource.deleteAlert(alertDetails)
+    }
+
+    override suspend fun getAllAlerts(): Flow<List<AlertModel>> {
+        return localDataSource.getAllAlerts()
+    }
+
 
     override suspend fun getWeather(
         lat: Double,

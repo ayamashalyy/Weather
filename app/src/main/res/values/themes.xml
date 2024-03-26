@@ -2,22 +2,27 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Weather_App" parent="Theme.Material3.DayNight">
         <!-- Customize your light theme here. -->
-         <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorAccent">#006DFF</item>
 
 
     </style>
 
-    <style name="Theme.Weather_App" parent="Base.Theme.Weather_App"/>
+    <style name="Theme.Weather_App" parent="Base.Theme.Weather_App" />
+
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/dark_blue</item>
         <item name="android:background">@drawable/toolbar_background_circle</item>
     </style>
+
     <style name="Theme.SplashScreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@android:color/white</item>
     </style>
+
     <style name="Theme.SettingFragment" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/primaryColor</item>
     </style>
+
+
 
 </resources>
