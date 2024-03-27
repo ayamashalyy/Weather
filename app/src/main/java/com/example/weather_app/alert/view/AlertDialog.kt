@@ -54,7 +54,6 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(), DatePickerD
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.add_alart, container, false)
-        createNotificationChannel()
         val sharedPreferences = requireContext().getSharedPreferences("location", Context.MODE_PRIVATE)
         selectedDateTextView = view.findViewById(R.id.alert_date_txt)
         fromTimeTextView = view.findViewById(R.id.alert_from_txt)
@@ -114,6 +113,7 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(), DatePickerD
                 Toast.makeText(requireContext(), "Saved Successfully", Toast.LENGTH_SHORT)
                     .show()
                 val intent = Intent(requireContext(),AlertBroadCast::class.java)
+                intent.putExtra("alertModel", alert)
                 val pendingIntent: PendingIntent = PendingIntent.getBroadcast(requireContext(),0,intent,
                     PendingIntent.FLAG_IMMUTABLE)
                 val alarmManager = requireContext().getSystemService(ALARM_SERVICE) as AlarmManager
@@ -180,19 +180,6 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(), DatePickerD
             toTimeTextView.text = String.format("%02d:%02d", hourOfDay, minute)
         }
     }
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Weather"
-            val descriptionText = "Weather Notifications"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("weather_channel", name, importance).apply {
-                description = descriptionText
-            }
 
-            val notificationManager: NotificationManager =
-                context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
 
 }

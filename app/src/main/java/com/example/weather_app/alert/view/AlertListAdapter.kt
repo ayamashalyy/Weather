@@ -23,7 +23,9 @@ class AlertListAdapter (private val context: Context, private val listener: OnCl
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val alert = getItem(position)
-        holder.title.text = alert.locationName[position].toString()
+        holder.title.text = alert.Date
+        holder.fromTime.text = alert.fromTime
+        holder.toTime.text = alert.toTime
         holder.delete.setOnClickListener {
             val builder: AlertDialog.Builder = AlertDialog.Builder(context)
             builder.setTitle("Are you sure you want to delete this Place?")
@@ -35,8 +37,7 @@ class AlertListAdapter (private val context: Context, private val listener: OnCl
                 }.setCancelable(false).show()
 
         }
-        holder.fromTime.text = alert.fromTime[position].toString()
-        holder.toTime.text = alert.toTime[position].toString()
+
 
     }
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

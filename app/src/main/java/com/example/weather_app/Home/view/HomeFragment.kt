@@ -41,9 +41,6 @@ open class HomeFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var viewModel: HomeViewModel
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var recyclerViewday: RecyclerView
-    private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var hourAdapter: DayListAdapter
     private lateinit var dayAdapter: WeekListAdapter
     private lateinit var settingsManager: SettingsManager
