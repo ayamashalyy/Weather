@@ -6,7 +6,11 @@ import com.example.weather_app.Model.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class FakeLocal(private val locations: MutableList<FavLocation>? = mutableListOf() , private val currentWeather : MutableList<WeatherResponse>? = mutableListOf()) :
+class FakeLocal(
+    private val locations: MutableList<FavLocation>? = mutableListOf(),
+    private val currentWeather: MutableList<WeatherResponse>? = mutableListOf(),
+    private val alerts : MutableList<AlertModel>? = mutableListOf()
+) :
     localDataSourse {
     override fun getAllStoredLocations(): Flow<List<FavLocation>> {
         return flow {
@@ -18,7 +22,6 @@ class FakeLocal(private val locations: MutableList<FavLocation>? = mutableListOf
             }
         }
     }
-
 
 
     override fun deleteLocation(location: FavLocation) {
@@ -45,18 +48,25 @@ class FakeLocal(private val locations: MutableList<FavLocation>? = mutableListOf
     }
 
     override fun insertCurrentWeather(weather: WeatherResponse) {
-        TODO("Not yet implemented")
+        currentWeather?.add(weather)
     }
 
     override fun insertAlert(alert: AlertModel) {
-        TODO("Not yet implemented")
+        alerts?.add(alert)
     }
 
     override fun getAllAlerts(): Flow<List<AlertModel>> {
-        TODO("Not yet implemented")
+        return flow {
+            val alert = alerts?.toList()
+            if (alert.isNullOrEmpty()) {
+                emit(emptyList())
+            } else {
+                emit(alert)
+            }
+        }
     }
 
     override fun deleteAlert(alert: AlertModel) {
-        TODO("Not yet implemented")
+        alerts?.remove(alert)
     }
 }

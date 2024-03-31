@@ -24,7 +24,7 @@ class FavWeatherViewModel(private val repo: WeatherRepository) : ViewModel() {
         }
     }
 
-    private fun getLocalLocations() {
+     fun getLocalLocations() {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getStoredLocations().collect {
                 _weather.postValue(it)

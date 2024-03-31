@@ -17,7 +17,7 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
         getAlerts()
     }
 
-    private fun getAlerts() {
+     fun getAlerts() {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getAllAlerts().collect {
                 _alert.postValue(it)
