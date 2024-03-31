@@ -2,15 +2,12 @@ package com.example.weather_app.alert.view
 
 import android.app.AlarmManager
 import android.app.DatePickerDialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
-import android.content.Context.ALARM_SERVICE
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,39 +19,35 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
-import androidx.work.Constraints
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.weather_app.FavoriteWeather.viewModel.FavWeatherViewModel
 import com.example.weather_app.Model.AlertModel
 import com.example.weather_app.R
 import com.example.weather_app.alert.viewModel.AlertViewModel
 import java.util.*
-import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
-class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(), DatePickerDialog.OnDateSetListener,
-    TimePickerDialog.OnTimeSetListener {
+class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(),
+    DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private lateinit var selectedDateTextView: TextView
     private lateinit var fromTimeTextView: TextView
     private lateinit var toTimeTextView: TextView
-    private lateinit var selectedTextView: TextView
     private lateinit var save: Button
+    private lateinit var selectedTextView: TextView
     private lateinit var radioGroup: RadioGroup
     private lateinit var notification: RadioButton
     private lateinit var alarm: RadioButton
     private lateinit var type: String
+    private lateinit var selectedDateCalendar: Calendar
+    private lateinit var selectedStartTimeCalendar: Calendar
+    private lateinit var selectedendTimeCalendar: Calendar
 
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.add_alart, container, false)
-        val sharedPreferences = requireContext().getSharedPreferences("location", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            requireContext().getSharedPreferences("location", Context.MODE_PRIVATE)
         selectedDateTextView = view.findViewById(R.id.alert_date_txt)
         fromTimeTextView = view.findViewById(R.id.alert_from_txt)
         toTimeTextView = view.findViewById(R.id.alert_to_txt)
@@ -62,23 +55,20 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(), DatePickerD
         radioGroup = view.findViewById(R.id.alert_radio_group)
         notification = view.findViewById(R.id.radio_notification)
         alarm = view.findViewById(R.id.radio_alarm)
+        selectedDateCalendar = Calendar.getInstance()
+        selectedStartTimeCalendar = Calendar.getInstance()
+        selectedendTimeCalendar = Calendar.getInstance()
 
 
         val calendarButton = view.findViewById<ImageView>(R.id.calender_btn)
         val fromTimeButton = view.findViewById<ImageView>(R.id.from_time_btn)
         val toTimeButton = view.findViewById<ImageView>(R.id.to_time_btn)
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            var alertType = view.findViewById<View>(checkedId) as RadioButton
-            when (alertType) {
-                notification -> {
-                    type = "notification"
-
-                }
-
-                alarm -> {
-                    type = "alarm"
-
-                }
+            val alertType = view.findViewById<View>(checkedId) as RadioButton
+            type = if (alertType == notification) {
+                "notification"
+            } else {
+                "alarm"
             }
         }
         calendarButton.setOnClickListener {
@@ -91,13 +81,9 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(), DatePickerD
             showTimePicker(toTimeTextView)
         }
         save.setOnClickListener {
-            if (!(selectedDateTextView.text != "" && fromTimeTextView.text != "" &&
-                        toTimeTextView.text != "" && (notification.isChecked || alarm.isChecked))
-            ) {
+            if (selectedDateTextView.text.isEmpty() || fromTimeTextView.text.isEmpty() || toTimeTextView.text.isEmpty() || (!notification.isChecked && !alarm.isChecked)) {
                 Toast.makeText(
-                    requireContext(),
-                    "Required Empty Fields",
-                    Toast.LENGTH_SHORT
+                    requireContext(), "Required Empty Fields", Toast.LENGTH_SHORT
                 ).show()
             } else {
                 val alert = AlertModel(
@@ -105,21 +91,52 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(), DatePickerD
                     fromTime = fromTimeTextView.text.toString(),
                     toTime = toTimeTextView.text.toString(),
                     alertType = type,
-                    latitude = sharedPreferences.getFloat("latitude", 0.0F).toDouble(),
-                    longitude = sharedPreferences.getFloat("longitude", 0.0F).toDouble(),
+                    latitude = sharedPreferences.getString("latitude", "0.0")!!.toDouble(),
+                    longitude = sharedPreferences.getString("longitude", "0.0")!!.toDouble(),
                     locationName = sharedPreferences.getString("locationName", "UnKnownPlace")!!
                 )
                 viewModel.addAlert(alert)
-                Toast.makeText(requireContext(), "Saved Successfully", Toast.LENGTH_SHORT)
-                    .show()
-                val intent = Intent(requireContext(),AlertBroadCast::class.java)
+                Toast.makeText(requireContext(), "Saved Successfully", Toast.LENGTH_SHORT).show()
+                val intent = Intent(requireContext(), AlertBroadCast::class.java)
                 intent.putExtra("alertModel", alert)
-                val pendingIntent: PendingIntent = PendingIntent.getBroadcast(requireContext(),0,intent,
-                    PendingIntent.FLAG_IMMUTABLE)
-                val alarmManager = requireContext().getSystemService(ALARM_SERVICE) as AlarmManager
-                val timeAllButtonClick:Long = System.currentTimeMillis()
-                val tenSecondsInMillis:Long = 1000 * 10
-                alarmManager.set(AlarmManager.RTC_WAKEUP,timeAllButtonClick + tenSecondsInMillis,pendingIntent)
+                intent.putExtra("type", alert.alertType)
+
+                val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
+                    requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE
+                )
+                val alarmManager =
+                    requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val start = Calendar.getInstance()
+                start.set(
+                    selectedDateCalendar.get(Calendar.YEAR),
+                    selectedDateCalendar.get(Calendar.MONTH),
+                    selectedDateCalendar.get(Calendar.DAY_OF_MONTH),
+                    selectedStartTimeCalendar.get(Calendar.HOUR_OF_DAY),
+                    selectedStartTimeCalendar.get(Calendar.MINUTE),
+                    selectedStartTimeCalendar.get(Calendar.SECOND)
+                )
+                Log.i("TAG", "${start} ")
+                var firstAlarm = abs(start.timeInMillis)
+                Log.i("TAG", "${firstAlarm} ")
+                Log.i("TAG", "${Calendar.getInstance().timeInMillis} ")
+
+
+                val end = Calendar.getInstance()
+                end.set(
+                    selectedDateCalendar.get(Calendar.YEAR),
+                    selectedDateCalendar.get(Calendar.MONTH),
+                    selectedDateCalendar.get(Calendar.DAY_OF_MONTH),
+                    selectedendTimeCalendar.get(Calendar.HOUR_OF_DAY),
+                    selectedendTimeCalendar.get(Calendar.MINUTE),
+                    selectedendTimeCalendar.get(Calendar.SECOND)
+
+                )
+
+                val selectedDateTimeInMillis = abs(start.timeInMillis - end.timeInMillis)
+                Log.i("TAG", "${selectedDateTimeInMillis} ")
+                alarmManager.set(
+                    AlarmManager.RTC_WAKEUP, firstAlarm , pendingIntent
+                )
                 dialog?.dismiss()
             }
         }
@@ -142,20 +159,27 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(), DatePickerD
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        val selectedDate = Calendar.getInstance()
-        selectedDate.set(Calendar.YEAR, year)
-        selectedDate.set(Calendar.MONTH, month)
-        selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
+        selectedDateCalendar.set(Calendar.YEAR, year)
+        selectedDateCalendar.set(Calendar.MONTH, month)
+        selectedDateCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
         val currentDate = Calendar.getInstance()
+        currentDate.set(Calendar.HOUR_OF_DAY, 0)
+        currentDate.set(Calendar.MINUTE, 0)
+        currentDate.set(Calendar.SECOND, 0)
+        Log.i("TAG", "Year set to: ${currentDate.get(Calendar.YEAR)}")
+        Log.i("TAG", "Month set to: ${currentDate.get(Calendar.MONTH)}")
+        Log.i("TAG", "Day of month set to: ${currentDate.get(Calendar.DAY_OF_MONTH)}")
 
-        if (selectedDate.before(currentDate)) {
-            Toast.makeText(requireContext(), "Please select a valid date", Toast.LENGTH_SHORT)
-                .show()
+
+        if (selectedDateCalendar.before(currentDate)) {
+            Toast.makeText(
+                requireContext(), "Please select a valid date", Toast.LENGTH_SHORT
+            ).show()
         } else {
             selectedDateTextView.text = "$dayOfMonth/$month/$year"
         }
     }
+
 
     private fun showTimePicker(textView: TextView) {
         selectedTextView = textView
@@ -176,10 +200,17 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(), DatePickerD
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
         if (selectedTextView === fromTimeTextView) {
             fromTimeTextView.text = String.format("%02d:%02d", hourOfDay, minute)
-        } else if (selectedTextView === toTimeTextView) {
+            selectedStartTimeCalendar.apply {
+                set(Calendar.HOUR_OF_DAY, hourOfDay)
+                set(Calendar.MINUTE, minute)
+                Log.i("TAG", "${selectedStartTimeCalendar.timeInMillis} ")
+            }
+        } else {
             toTimeTextView.text = String.format("%02d:%02d", hourOfDay, minute)
+            selectedendTimeCalendar.apply {
+                set(Calendar.HOUR_OF_DAY, hourOfDay)
+                set(Calendar.MINUTE, minute)
+            }
         }
     }
-
-
 }

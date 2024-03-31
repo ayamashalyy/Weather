@@ -35,7 +35,6 @@ class AlertListAdapter (private val context: Context, private val listener: OnCl
                 .setNegativeButton("Cancel") { dialog, which ->
                     dialog.dismiss()
                 }.setCancelable(false).show()
-
         }
 
 

@@ -1,13 +1,13 @@
 package com.example.weather_app.Model
 
-import com.example.weather_app.dp.WeatherLocalDataSourceImp
-import com.example.weather_app.network.WeatherRemoteDataSourceImp
+import com.example.weather_app.dp.localDataSourse
+import com.example.weather_app.network.remoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class WeatherRepositoryImp private constructor(
-    private val remoteSource: WeatherRemoteDataSourceImp,
-    private val localDataSource: WeatherLocalDataSourceImp
+    private val remoteSource: remoteDataSource,
+    private val localDataSource: localDataSourse
 ) : WeatherRepository {
 
 
@@ -15,10 +15,10 @@ class WeatherRepositoryImp private constructor(
         private var repo: WeatherRepositoryImp? = null
 
         fun getInstance(
-            remoteSource: WeatherRemoteDataSourceImp, localDataSource: WeatherLocalDataSourceImp
+            remote: remoteDataSource, local: localDataSourse
         ): WeatherRepositoryImp {
             if (repo == null) {
-                repo = WeatherRepositoryImp(remoteSource, localDataSource)
+                repo = WeatherRepositoryImp(remote, local)
             }
             return repo!!
         }

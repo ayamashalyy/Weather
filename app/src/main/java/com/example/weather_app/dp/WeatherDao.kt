@@ -16,7 +16,7 @@ interface WeatherDao {
     fun getAllLocations(): Flow<List<FavLocation>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLocation(location: FavLocation): Long
+    suspend fun insertLocation(location: FavLocation)
 
     @Delete
     suspend fun deleteLocation(location: FavLocation)
@@ -25,7 +25,7 @@ interface WeatherDao {
     fun getAllCurrentWeather(): Flow<List<WeatherResponse>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCurrentWeather(weather: WeatherResponse): Long
+    suspend fun insertCurrentWeather(weather: WeatherResponse)
 
     @Delete
     suspend fun deleteCurrentWeather(weather: WeatherResponse)
@@ -33,7 +33,7 @@ interface WeatherDao {
     fun allAlerts(): Flow<List<AlertModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAlert(alert: AlertModel): Long
+    suspend fun insertAlert(alert: AlertModel)
 
     @Delete
     suspend fun deleteAlert(alert: AlertModel)

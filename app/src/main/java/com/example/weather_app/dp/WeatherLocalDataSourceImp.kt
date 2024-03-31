@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class WeatherLocalDataSourceImp private constructor(context: Context) {
+class WeatherLocalDataSourceImp (context: Context):localDataSourse {
     private val weatherDAO: WeatherDao by lazy {
         val db: AppDataBase = AppDataBase.getInstance(context)
         db.getWeatherDao()
@@ -26,49 +26,49 @@ class WeatherLocalDataSourceImp private constructor(context: Context) {
         }
     }
 
-    fun getAllStoredLocations(): Flow<List<FavLocation>> {
+    override fun getAllStoredLocations(): Flow<List<FavLocation>> {
         return weatherDAO.getAllLocations()
     }
 
-    fun deleteLocation(location: FavLocation) {
+    override fun deleteLocation(location: FavLocation) {
         CoroutineScope(Dispatchers.IO).launch {
             weatherDAO.deleteLocation(location)
         }
     }
 
-    fun insertLocation(location: FavLocation) {
+    override fun insertLocation(location: FavLocation) {
         CoroutineScope(Dispatchers.IO).launch {
             weatherDAO.insertLocation(location)
         }
     }
 
-    fun getAllStoredCurrentWeather(): Flow<List<WeatherResponse>> {
+    override fun getAllStoredCurrentWeather(): Flow<List<WeatherResponse>> {
         return weatherDAO.getAllCurrentWeather()
     }
 
-    fun deleteCurrentWeather(weather: WeatherResponse) {
+    override fun deleteCurrentWeather(weather: WeatherResponse) {
         CoroutineScope(Dispatchers.IO).launch {
             weatherDAO.deleteCurrentWeather(weather)
         }
     }
 
-    fun insertCurrentWeather(weather: WeatherResponse) {
+    override fun insertCurrentWeather(weather: WeatherResponse) {
         CoroutineScope(Dispatchers.IO).launch {
             weatherDAO.insertCurrentWeather(weather)
         }
     }
 
-    fun insertAlert(alert: AlertModel) {
+    override fun insertAlert(alert: AlertModel) {
         CoroutineScope(Dispatchers.IO).launch {
             weatherDAO.insertAlert(alert)
         }
     }
 
-    fun getAllAlerts(): Flow<List<AlertModel>> {
+    override fun getAllAlerts(): Flow<List<AlertModel>> {
         return weatherDAO.allAlerts()
     }
 
-    fun deleteAlert(alert: AlertModel) {
+    override fun deleteAlert(alert: AlertModel) {
         CoroutineScope(Dispatchers.IO).launch {
             weatherDAO.deleteAlert(alert)
         }

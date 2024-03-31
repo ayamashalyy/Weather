@@ -2,7 +2,22 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="WeatherLocalDataSourceImpTest">
+        <State />
+      </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="deleteAlert_alert_returnEmptyLocation()">
+        <State />
+      </entry>
+      <entry key="deleteAlert_alert_returnEmptyLocation() (1)">
+        <State />
+      </entry>
+      <entry key="getAllAlerts_getListOfAlerts()">
+        <State />
+      </entry>
+      <entry key="insertAlert_alert_returnAlert()">
         <State />
       </entry>
     </value>

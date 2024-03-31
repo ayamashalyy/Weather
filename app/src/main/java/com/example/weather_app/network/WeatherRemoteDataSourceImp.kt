@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class WeatherRemoteDataSourceImp private constructor() {
+class WeatherRemoteDataSourceImp private constructor():remoteDataSource {
     private val BASE_URL = "https://api.openweathermap.org/data/2.5/"
     private var weatherService: WeatherService
 
@@ -29,7 +29,7 @@ class WeatherRemoteDataSourceImp private constructor() {
     }
 
 
-    suspend fun makeNetworkCall(
+    override suspend fun makeNetworkCall(
         lat: Double, lon: Double, units: String, lang: String
     ): WeatherResponse {
         return withContext(Dispatchers.IO) {
