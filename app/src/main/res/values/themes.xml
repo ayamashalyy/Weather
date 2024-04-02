@@ -22,6 +22,10 @@
     <style name="Theme.SettingFragment" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/primaryColor</item>
     </style>
+    <style name="EditTextOnWhiteBgr" parent="@android:style/TextAppearance">
+        <item name="colorAccent">@color/primaryColor</item>
+        <item name="android:colorAccent">@color/primaryColor</item>
+    </style>
 
 
 

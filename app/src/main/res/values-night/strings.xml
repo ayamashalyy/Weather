@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home">Home</string>
     <string name="Location">Location</string>
     <string name="Gps">Gps</string>
     <string name="Map">Map</string>

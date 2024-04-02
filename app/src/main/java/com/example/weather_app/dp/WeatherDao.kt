@@ -29,6 +29,9 @@ interface WeatherDao {
 
     @Delete
     suspend fun deleteCurrentWeather(weather: WeatherResponse)
+    @Query("DELETE FROM currentWeather")
+    suspend fun deleteAllCurrentWeather()
+
     @Query("SELECT * FROM alerts")
     fun allAlerts(): Flow<List<AlertModel>>
 

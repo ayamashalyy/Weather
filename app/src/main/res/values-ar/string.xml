@@ -4,11 +4,11 @@
     <string name="open_nav">Open Navigation Drawer</string>
     <string name="close_nav">Close Navigation Drawer</string>
     <string name="hello_blank_fragment">مرحبا بلانك فراجمنت</string>
-    <string name="home">الصفحة الرئيسية</string>
-    <string name="favourites">التفضيلات</string>
-    <string name="alerts">التنبيهات</string>
-    <string name="settings">الاعدادات</string>
     <string name="Location">الموقع</string>
+    <string name="home_nav">الرئسيه</string>
+    <string name="favourites_nav">المفضلات</string>
+    <string name="alerts_nav">التنبيهات</string>
+    <string name="settings_nav">الاعدادات</string>
     <string name="clear_sky">Clear sky</string>
     <string name="alex">Alex</string>
     <string name="fri_26_fab">Fri,26 Fab</string>
@@ -46,6 +46,7 @@
     <string name="save">حفظ</string>
     <string name="weather_alert">تنبية الطقس</string>
     <string name="dismiss">تجاهل</string>
+
 
 
 

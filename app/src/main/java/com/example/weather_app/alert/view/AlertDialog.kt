@@ -2,11 +2,15 @@ package com.example.weather_app.alert.view
 
 import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,10 +23,12 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.DialogFragment
 import com.example.weather_app.Model.AlertModel
 import com.example.weather_app.R
 import com.example.weather_app.alert.viewModel.AlertViewModel
+import com.google.android.material.timepicker.MaterialTimePicker
 import java.util.*
 import kotlin.math.abs
 
@@ -56,8 +62,10 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(),
         notification = view.findViewById(R.id.radio_notification)
         alarm = view.findViewById(R.id.radio_alarm)
         selectedDateCalendar = Calendar.getInstance()
-        selectedStartTimeCalendar = Calendar.getInstance()
         selectedendTimeCalendar = Calendar.getInstance()
+        selectedStartTimeCalendar = Calendar.getInstance()
+
+        createNotificationChannel()
 
 
         val calendarButton = view.findViewById<ImageView>(R.id.calender_btn)
@@ -97,46 +105,42 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(),
                 )
                 viewModel.addAlert(alert)
                 Toast.makeText(requireContext(), "Saved Successfully", Toast.LENGTH_SHORT).show()
-                val intent = Intent(requireContext(), AlertBroadCast::class.java)
-                intent.putExtra("alertModel", alert)
-                intent.putExtra("type", alert.alertType)
+                if (checkNotificationPermissions(requireContext())!=null) {
+                    val intent = Intent(requireContext(), AlertBroadCast::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    intent.putExtra("alertModel", alert)
+                    intent.putExtra("type", alert.alertType)
 
-                val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
-                    requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE
-                )
-                val alarmManager =
-                    requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                val start = Calendar.getInstance()
-                start.set(
-                    selectedDateCalendar.get(Calendar.YEAR),
-                    selectedDateCalendar.get(Calendar.MONTH),
-                    selectedDateCalendar.get(Calendar.DAY_OF_MONTH),
-                    selectedStartTimeCalendar.get(Calendar.HOUR_OF_DAY),
-                    selectedStartTimeCalendar.get(Calendar.MINUTE),
-                    selectedStartTimeCalendar.get(Calendar.SECOND)
-                )
-                Log.i("TAG", "${start} ")
-                var firstAlarm = abs(start.timeInMillis)
-                Log.i("TAG", "${firstAlarm} ")
-                Log.i("TAG", "${Calendar.getInstance().timeInMillis} ")
+                    val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
+                        requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE
+                    )
+                    val alarmManager =
+                        requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    val start = Calendar.getInstance()
+                    start.set(
+                        selectedDateCalendar.get(Calendar.YEAR),
+                        selectedDateCalendar.get(Calendar.MONTH),
+                        selectedDateCalendar.get(Calendar.DAY_OF_MONTH),
+                        selectedStartTimeCalendar.get(Calendar.HOUR_OF_DAY),
+                        selectedStartTimeCalendar.get(Calendar.MINUTE),
+                        selectedStartTimeCalendar.get(Calendar.SECOND)
+                    )
+                    val end = Calendar.getInstance()
+                    end.set(
+                        selectedDateCalendar.get(Calendar.YEAR),
+                        selectedDateCalendar.get(Calendar.MONTH),
+                        selectedDateCalendar.get(Calendar.DAY_OF_MONTH),
+                        selectedendTimeCalendar.get(Calendar.HOUR_OF_DAY),
+                        selectedendTimeCalendar.get(Calendar.MINUTE),
+                        selectedendTimeCalendar.get(Calendar.SECOND)
 
+                    )
+                    val selectedDateTimeInMillis = abs(start.timeInMillis - end.timeInMillis)
 
-                val end = Calendar.getInstance()
-                end.set(
-                    selectedDateCalendar.get(Calendar.YEAR),
-                    selectedDateCalendar.get(Calendar.MONTH),
-                    selectedDateCalendar.get(Calendar.DAY_OF_MONTH),
-                    selectedendTimeCalendar.get(Calendar.HOUR_OF_DAY),
-                    selectedendTimeCalendar.get(Calendar.MINUTE),
-                    selectedendTimeCalendar.get(Calendar.SECOND)
-
-                )
-
-                val selectedDateTimeInMillis = abs(start.timeInMillis - end.timeInMillis)
-                Log.i("TAG", "${selectedDateTimeInMillis} ")
-                alarmManager.set(
-                    AlarmManager.RTC_WAKEUP, firstAlarm , pendingIntent
-                )
+                    alarmManager.set(
+                        AlarmManager.RTC_WAKEUP, start.timeInMillis + (selectedDateTimeInMillis), pendingIntent
+                    )
+                }
                 dialog?.dismiss()
             }
         }
@@ -162,24 +166,9 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(),
         selectedDateCalendar.set(Calendar.YEAR, year)
         selectedDateCalendar.set(Calendar.MONTH, month)
         selectedDateCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-        val currentDate = Calendar.getInstance()
-        currentDate.set(Calendar.HOUR_OF_DAY, 0)
-        currentDate.set(Calendar.MINUTE, 0)
-        currentDate.set(Calendar.SECOND, 0)
-        Log.i("TAG", "Year set to: ${currentDate.get(Calendar.YEAR)}")
-        Log.i("TAG", "Month set to: ${currentDate.get(Calendar.MONTH)}")
-        Log.i("TAG", "Day of month set to: ${currentDate.get(Calendar.DAY_OF_MONTH)}")
 
-
-        if (selectedDateCalendar.before(currentDate)) {
-            Toast.makeText(
-                requireContext(), "Please select a valid date", Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            selectedDateTextView.text = "$dayOfMonth/$month/$year"
-        }
+        selectedDateTextView.text = "$dayOfMonth/${month + 1}/$year"
     }
-
 
     private fun showTimePicker(textView: TextView) {
         selectedTextView = textView
@@ -192,7 +181,7 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(),
             this,
             hour,
             minute,
-            true
+            false
         )
         timePickerDialog.show()
     }
@@ -213,4 +202,49 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(),
             }
         }
     }
+    companion object {
+        private const val CHANNEL_ID = "weather_channel"
+    }
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name: CharSequence = "Weather"
+            val descriptionText = "Weather Notifications"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+
+            val notificationManager: NotificationManager =
+                context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+    fun checkNotificationPermissions(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            val isEnabled = notificationManager.areNotificationsEnabled()
+
+            if (!isEnabled) {
+                val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                context.startActivity(intent)
+
+                return false
+            }
+        } else {
+            val areEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+
+            if (!areEnabled) {
+                val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                context.startActivity(intent)
+
+                return false
+            }
+        }
+        return true
+    }
+
 }

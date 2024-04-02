@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.PixelFormat
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -50,12 +51,11 @@ class AlertBroadCast : BroadcastReceiver() {
         val alertModel = intent?.getSerializableExtra("alertModel") as AlertModel
         val type = intent?.getStringExtra("type")
         if (type == "notification") {
-            createNotificationChannel(context)
             getNetWorkCall(repository, context, intent, alertModel)
-            deleteAlertItem(repository, alertModel)
         } else if (type == "alarm") {
             alerm(repository, context, intent, alertModel)
         }
+        deleteAlertItem(repository, alertModel)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -106,7 +106,7 @@ class AlertBroadCast : BroadcastReceiver() {
                     )
                 }
                 val des = weather.firstOrNull()?.list?.get(0)?.weather?.get(0)?.description
-                showAlarm(context,des.toString())
+                showAlarm(context, des.toString())
 
 
             }
@@ -141,6 +141,7 @@ class AlertBroadCast : BroadcastReceiver() {
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.header))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+
         with(NotificationManagerCompat.from(context)) {
             if (ActivityCompat.checkSelfPermission(
                     context, Manifest.permission.ACCESS_NOTIFICATION_POLICY
@@ -156,20 +157,7 @@ class AlertBroadCast : BroadcastReceiver() {
         private const val CHANNEL_ID = "weather_channel"
         private const val NOTIFICATION_ID = 123
 
-        private fun createNotificationChannel(context: Context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = "Weather"
-                val descriptionText = "Weather Notifications"
-                val importance = NotificationManager.IMPORTANCE_DEFAULT
-                val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                    description = descriptionText
-                }
 
-                val notificationManager: NotificationManager =
-                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(channel)
-            }
-        }
     }
 
     private fun deleteAlertItem(repository: WeatherRepositoryImp, alertModel: AlertModel) {

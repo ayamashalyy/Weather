@@ -46,10 +46,11 @@ class WeatherLocalDataSourceImp (context: Context):localDataSourse {
         return weatherDAO.getAllCurrentWeather()
     }
 
-    override fun deleteCurrentWeather(weather: WeatherResponse) {
-        CoroutineScope(Dispatchers.IO).launch {
-            weatherDAO.deleteCurrentWeather(weather)
-        }
+
+    override fun deleteAllCurrentWeather() {
+    CoroutineScope(Dispatchers.IO).launch{
+        weatherDAO.deleteAllCurrentWeather()
+    }
     }
 
     override fun insertCurrentWeather(weather: WeatherResponse) {

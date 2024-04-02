@@ -42,8 +42,9 @@ class WeatherRepositoryImp private constructor(
         localDataSource.insertCurrentWeather(weather)
     }
 
-    override suspend fun deleteCurrentWeather(weather: WeatherResponse) {
-        localDataSource.deleteCurrentWeather(weather)
+
+    override suspend fun deleteAllCurrentWeather() {
+        localDataSource.deleteAllCurrentWeather()
     }
 
     override fun getStoredCurrentWeather(): Flow<List<WeatherResponse>> {

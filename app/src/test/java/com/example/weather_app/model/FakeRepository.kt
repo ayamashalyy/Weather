@@ -35,9 +35,10 @@ class FakeRepository : WeatherRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteCurrentWeather(weather: WeatherResponse) {
+    override suspend fun deleteAllCurrentWeather() {
         TODO("Not yet implemented")
     }
+
 
     override fun getStoredCurrentWeather(): Flow<List<WeatherResponse>> {
         TODO("Not yet implemented")

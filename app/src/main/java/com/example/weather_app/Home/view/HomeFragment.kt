@@ -93,6 +93,7 @@ open class HomeFragment : Fragment() {
         if (latitude != 0.0 && longitude != 0.0) {
             lifecycleScope.launch {
                 viewModel.getMyWeatherStatus(latitude, longitude, unit, language)
+                viewModel.deleteAllCurrentWeatherInHome()
             }
         } else {
             getLocation()
@@ -167,13 +168,16 @@ open class HomeFragment : Fragment() {
         } else {
             lifecycleScope.launch {
                 viewModel.getCurrentWeatherInHome()
-                viewModel._weather.collectLatest { result ->
+                viewModel.dataBase.collectLatest { result ->
                     when (result) {
                         is ApiState.Loading -> {
+                            progressBar.visibility = View.VISIBLE
+                            binding.homeDetailsCard.visibility = View.INVISIBLE
+                            Toast.makeText(requireContext(), "Loading...", Toast.LENGTH_SHORT)
+                                .show()
                         }
 
                         is ApiState.Success -> {
-                            viewModel.insertCurrentWeatherInHome(result.data)
                             binding.hourlyWeatherRecycler.visibility = View.VISIBLE
                             val weather = result.data
                             binding.cityNameTxt.text = weather.city.name

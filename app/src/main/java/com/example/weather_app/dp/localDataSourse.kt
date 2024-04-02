@@ -10,7 +10,7 @@ interface localDataSourse {
     fun deleteLocation(location: FavLocation)
     fun insertLocation(location: FavLocation)
     fun getAllStoredCurrentWeather(): Flow<List<WeatherResponse>>
-    fun deleteCurrentWeather(weather: WeatherResponse)
+    fun deleteAllCurrentWeather()
     fun insertCurrentWeather(weather: WeatherResponse)
     fun insertAlert(alert: AlertModel)
     fun getAllAlerts(): Flow<List<AlertModel>>

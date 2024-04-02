@@ -7,7 +7,7 @@ interface WeatherRepository {
     suspend fun deleteLocation(favLocation: FavLocation)
     fun getStoredLocations(): Flow<List<FavLocation>>
     suspend fun insertCurrentWeather(weather: WeatherResponse)
-    suspend fun deleteCurrentWeather(weather: WeatherResponse)
+    suspend fun deleteAllCurrentWeather()
     fun getStoredCurrentWeather(): Flow<List<WeatherResponse>>
     suspend fun insertAlert(alertModel: AlertModel)
     suspend fun deleteAlert(alertDetails: AlertModel)

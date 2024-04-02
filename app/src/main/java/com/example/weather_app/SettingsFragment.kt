@@ -12,8 +12,11 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.weather_app.Home.view.HomeFragment
 import com.example.weather_app.utils.SettingsManager
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class SettingsFragment : Fragment() {
@@ -114,30 +117,33 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        val savedLanguage = settingsManager.getSelectedLanguage()
-        if (savedLanguage != null) {
-            when (savedLanguage) {
-                "en" -> view.findViewById<RadioButton>(R.id.radio_Eg).isChecked = true
-                "ar" -> view.findViewById<RadioButton>(R.id.radio_Ar).isChecked = true
+        lifecycleScope.launch {
+            settingsManager.selectedLanguageFlow.collect { language ->
+                when (language) {
+                    "en" -> view.findViewById<RadioButton>(R.id.radio_Eg).isChecked = true
+                    "ar" -> view.findViewById<RadioButton>(R.id.radio_Ar).isChecked = true
+                }
             }
         }
 
-        val savedTemperatureUnit = settingsManager.getSelectedTemperatureUnit()
-        if (savedTemperatureUnit != null) {
-            when (savedTemperatureUnit) {
-                "standard" -> view.findViewById<RadioButton>(R.id.radio_K).isChecked = true
-                "metric" -> view.findViewById<RadioButton>(R.id.radio_C).isChecked = true
-                "imperial" -> view.findViewById<RadioButton>(R.id.radio_F).isChecked = true
-            }
+        lifecycleScope.launch {
+            settingsManager.selectedTemperatureUnitFlow
+                .distinctUntilChanged()
+                .collect { unit ->
+                    when (unit) {
+                        "standard" -> view.findViewById<RadioButton>(R.id.radio_K).isChecked = true
+                        "metric" -> view.findViewById<RadioButton>(R.id.radio_C).isChecked = true
+                        "imperial" -> view.findViewById<RadioButton>(R.id.radio_F).isChecked = true
+                    }
+                }
         }
 
-        val savedWindSpeedUnit = settingsManager.getSelectedWindSpeedUnit()
-        if (savedWindSpeedUnit != null) {
-            when (savedWindSpeedUnit) {
-                "m/h" -> view.findViewById<RadioButton>(R.id.radio_miles_hour).isChecked =
-                    true
-
-                "m/s" -> view.findViewById<RadioButton>(R.id.radio_meter_sec).isChecked = true
+       lifecycleScope.launch {
+            settingsManager.selectedWindSpeedUnitFlow.collect { unit ->
+                when (unit) {
+                    "m/h" -> view.findViewById<RadioButton>(R.id.radio_miles_hour).isChecked = true
+                    "m/s" -> view.findViewById<RadioButton>(R.id.radio_meter_sec).isChecked = true
+                }
             }
         }
     }

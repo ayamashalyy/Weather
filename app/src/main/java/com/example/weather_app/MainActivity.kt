@@ -1,22 +1,43 @@
 package com.example.weather_app
 
+import android.Manifest
+import android.content.pm.PackageManager
 import com.example.weather_app.Home.view.HomeFragment
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.example.weather_app.FavoriteWeather.view.FavoritesFragment
 import com.example.weather_app.alert.view.AlertsFragment
+import com.example.weather_app.utils.SettingsManager
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
     lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var settingsManager: SettingsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        settingsManager = SettingsManager(applicationContext)
+        val result = settingsManager.getSelectedLocation()
+        if (result == "map")
+        {
+            Log.e("Trace Location Error", "Result is Map", )
+        }
+        else if (result == "gps")
+        {
+            Log.e("Trace Location Error", "Result is GPS", )
+        }else
+            Log.e("Trace Location Error", "Result is Else", )
+
+
         setContentView(R.layout.activity_main)
         val fragmentName = intent.getStringExtra("fragment")
         val fragment = Class.forName(fragmentName).newInstance() as Fragment

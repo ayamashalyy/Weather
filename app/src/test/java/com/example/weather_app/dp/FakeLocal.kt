@@ -43,9 +43,10 @@ class FakeLocal(
         }
     }
 
-    override fun deleteCurrentWeather(weather: WeatherResponse) {
-        currentWeather?.remove(weather)
+    override fun deleteAllCurrentWeather() {
+        TODO("Not yet implemented")
     }
+
 
     override fun insertCurrentWeather(weather: WeatherResponse) {
         currentWeather?.add(weather)
