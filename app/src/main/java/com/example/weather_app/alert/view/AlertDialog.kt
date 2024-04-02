@@ -109,8 +109,6 @@ class AlertDialog(val viewModel: AlertViewModel) : DialogFragment(),
                     val intent = Intent(requireContext(), AlertBroadCast::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     intent.putExtra("alertModel", alert)
-                    intent.putExtra("type", alert.alertType)
-
                     val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
                         requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE
                     )

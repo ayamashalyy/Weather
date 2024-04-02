@@ -79,7 +79,8 @@ open class HomeFragment : Fragment() {
         Log.i("Trace Geolocation", "ddddddddddddddd lat: ${latitude} ==> lan: ${longitude}")
         val connectivityManager =
             requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+        val networkInfo = connectivityManager.activeNetworkInfo
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         val homeFactory = HomeViewModelFactory(
@@ -90,18 +91,19 @@ open class HomeFragment : Fragment() {
         )
         viewModel = ViewModelProvider(this, homeFactory)[HomeViewModel::class.java]
 
-        if (latitude != 0.0 && longitude != 0.0) {
-            lifecycleScope.launch {
-                viewModel.getMyWeatherStatus(latitude, longitude, unit, language)
-                viewModel.deleteAllCurrentWeatherInHome()
-            }
-        } else {
-            getLocation()
-        }
 
         val progressBar = binding.progressBar
         progressBar.visibility = View.VISIBLE
-        if (activeNetwork != null) {
+        if (networkInfo != null && networkInfo.isConnected) {
+            if (latitude != 0.0 && longitude != 0.0) {
+                lifecycleScope.launch {
+                    viewModel.getMyWeatherStatus(latitude, longitude, unit, language)
+                    viewModel.deleteAllCurrentWeatherInHome()
+                }
+            } else {
+                getLocation()
+            }
+
             lifecycleScope.launch {
                 viewModel._weather.collectLatest { result ->
                     when (result) {
@@ -166,6 +168,7 @@ open class HomeFragment : Fragment() {
                 }
             }
         } else {
+            Log.i("TAG", "no network ")
             lifecycleScope.launch {
                 viewModel.getCurrentWeatherInHome()
                 viewModel.dataBase.collectLatest { result ->
@@ -178,6 +181,9 @@ open class HomeFragment : Fragment() {
                         }
 
                         is ApiState.Success -> {
+                            Log.i("TAG", "pass ")
+                            progressBar.visibility = View.GONE
+                            binding.homeDetailsCard.visibility = View.VISIBLE
                             binding.hourlyWeatherRecycler.visibility = View.VISIBLE
                             val weather = result.data
                             binding.cityNameTxt.text = weather.city.name
@@ -193,29 +199,41 @@ open class HomeFragment : Fragment() {
                                         "yyyy-MM-dd", Locale(settingsManager.getSelectedLanguage())
                                     ).parse(it.dt_txt)
                                 )
+
                             }
+                            Log.i("TAG", "after format ")
                             binding.tempDesc.text =
                                 weather.list.firstOrNull()?.weather?.firstOrNull()?.description
                                     ?: "No description available"
                             val temperatureInCelsius = weather.list.firstOrNull()?.main?.temp
+                            Log.i("TAG", "before when ")
+
                             val temperatureString = when (unit) {
                                 "metric" -> "${temperatureInCelsius}\u2103"
                                 "standard" -> "${temperatureInCelsius}\u212A"
                                 "imperial" -> "${temperatureInCelsius}\u2109"
                                 else -> "${temperatureInCelsius}\u212A"
                             }
+                            Log.i("TAG", "after when ")
+
                             binding.tempTxt.text = temperatureString
+                            Log.i("TAG", "before glide ")
 
                             Glide.with(this@HomeFragment)
                                 .load("https://openweathermap.org/img/wn/${weather.list[0].weather[0].icon}@2x.png")
                                 .into(binding.weatherImg)
+                            Log.i("TAG", "after glide ")
+
                             binding.humidityTxt.text =
                                 "${weather.list.firstOrNull()?.main?.humidity.toString()}%"
                             binding.cloudsTxt.text =
                                 "${weather.list.firstOrNull()?.clouds?.all.toString()}%"
                             binding.pressureTxt.text =
                                 "${weather.list.firstOrNull()?.main?.pressure.toString()}hpa"
+                            Log.i("TAG", "after wind ")
                             updateWindSpeedDisplay(weather)
+                            Log.i("TAG", "after wind ")
+
                         }
 
                         else -> {
@@ -307,6 +325,8 @@ open class HomeFragment : Fragment() {
         val windSpeed = weather.list.firstOrNull()?.wind?.speed ?: 0.0
         val formattedWindSpeed = windSpeedUnit?.let { convertWindSpeed(windSpeed, it) }
         binding.windTxt.text = formattedWindSpeed
+        Log.i("TAG", "speed wind ")
+
     }
 
     private fun convertWindSpeed(speed: Double, unit: String): String {

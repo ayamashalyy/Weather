@@ -21,21 +21,8 @@ import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
     lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var settingsManager: SettingsManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        settingsManager = SettingsManager(applicationContext)
-        val result = settingsManager.getSelectedLocation()
-        if (result == "map")
-        {
-            Log.e("Trace Location Error", "Result is Map", )
-        }
-        else if (result == "gps")
-        {
-            Log.e("Trace Location Error", "Result is GPS", )
-        }else
-            Log.e("Trace Location Error", "Result is Else", )
 
 
         setContentView(R.layout.activity_main)

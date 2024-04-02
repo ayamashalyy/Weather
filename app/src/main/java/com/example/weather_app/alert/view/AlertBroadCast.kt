@@ -44,26 +44,40 @@ class AlertBroadCast : BroadcastReceiver() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent?) {
+        Log.i("TAG", "onReceive: ")
         settingsManager = SettingsManager(context)
         val repository = WeatherRepositoryImp.getInstance(
             WeatherRemoteDataSourceImp.getInstance(), WeatherLocalDataSourceImp.getInstance(context)
         )
         val alertModel = intent?.getSerializableExtra("alertModel") as AlertModel
-        val type = intent?.getStringExtra("type")
-        if (type == "notification") {
+        Log.i("TAGG", "before notication ")
+
+
+        if (alertModel.alertType == "notification") {
+
             getNetWorkCall(repository, context, intent, alertModel)
-        } else if (type == "alarm") {
+        }
+        else if (alertModel.alertType == "alarm") {
             alerm(repository, context, intent, alertModel)
         }
         deleteAlertItem(repository, alertModel)
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun showAlarm(context: Context, des: String) {
         try {
+            Log.i("TAGG", "before show ")
+
             view = LayoutInflater.from(context).inflate(R.layout.response_alert, null, false)
+            Log.i("TAGG", "show ")
+
             val description = view.findViewById<TextView>(R.id.alert_txt)
+            Log.i("TAGG", "des ")
+
             val dismiss = view.findViewById<Button>(R.id.dismiss_btn)
+            Log.i("TAGG", "dismiss")
+
             val layout = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -74,6 +88,7 @@ class AlertBroadCast : BroadcastReceiver() {
             layout.gravity = Gravity.TOP
             windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             windowManager.addView(view, layout)
+            view.visibility = View.VISIBLE
             description.text = des
             dismiss.setOnClickListener {
                 cancel()
@@ -83,6 +98,7 @@ class AlertBroadCast : BroadcastReceiver() {
             Toast.makeText(
                 context, "${e.message}", Toast.LENGTH_SHORT
             ).show()
+            Log.i("TAG", "${e.message}: ")
         }
     }
 

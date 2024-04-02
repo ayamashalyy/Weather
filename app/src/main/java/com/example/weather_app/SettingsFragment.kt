@@ -133,7 +133,7 @@ class SettingsFragment : Fragment() {
                     when (unit) {
                         "standard" -> view.findViewById<RadioButton>(R.id.radio_K).isChecked = true
                         "metric" -> view.findViewById<RadioButton>(R.id.radio_C).isChecked = true
-                        "imperial" -> view.findViewById<RadioButton>(R.id.radio_F).isChecked = true
+                        "imperial" -> view.findViewById<RadioButton>(R.id.radio_F).isChecked= true
                     }
                 }
         }
@@ -141,8 +141,8 @@ class SettingsFragment : Fragment() {
        lifecycleScope.launch {
             settingsManager.selectedWindSpeedUnitFlow.collect { unit ->
                 when (unit) {
-                    "m/h" -> view.findViewById<RadioButton>(R.id.radio_miles_hour).isChecked = true
-                    "m/s" -> view.findViewById<RadioButton>(R.id.radio_meter_sec).isChecked = true
+                    "m/h" -> view.findViewById<RadioButton>(R.id.radio_miles_hour)?.isChecked = true
+                    "m/s" -> view.findViewById<RadioButton>(R.id.radio_meter_sec)?.isChecked = true
                 }
             }
         }
