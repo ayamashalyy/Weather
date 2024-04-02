@@ -17,7 +17,7 @@ import com.example.weather_app.R
 class favListAdapter(private val context: Context, private val listener: OnFavoriteClickListener) :
     ListAdapter<FavLocation, favListAdapter.ViewHolder>(ProductDiffCallback()) {
 
-    fun setList(updateProducts: List<FavLocation>) {
+    fun setList(updateProducts: MutableList<FavLocation>) {
         submitList(updateProducts)
     }
 

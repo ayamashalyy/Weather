@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
@@ -21,6 +22,8 @@ import com.example.weather_app.R
 import com.example.weather_app.dp.WeatherLocalDataSourceImp
 import com.example.weather_app.network.WeatherRemoteDataSourceImp
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.weather_app.LoadingState
+import kotlinx.coroutines.launch
 
 class FavoritesFragment : Fragment(), OnFavoriteClickListener {
     private lateinit var btn: FloatingActionButton
@@ -52,20 +55,30 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
         viewModel = ViewModelProvider(this, favFactory).get(FavWeatherViewModel::class.java)
         favRecycler = view.findViewById(R.id.map_rv)
         setUpRecyclerView()
-        viewModel.weather.observe(requireActivity()) { weather ->
-            if (weather != null) {
-                if (weather.size == 0) {
-                    animation.visibility = View.VISIBLE
-                    favRecycler.visibility = View.GONE
-                } else {
-                    animation.visibility = View.INVISIBLE
-                    favRecycler.visibility = View.VISIBLE
-                    favAdapter.submitList(weather)
 
-
+        lifecycleScope.launch {
+            viewModel.weather.collect { loadingState ->
+                when (loadingState) {
+                    is LoadingState.Loading -> {
+                        animation.visibility = View.VISIBLE
+                        favRecycler.visibility = View.GONE
+                    }
+                    is LoadingState.Success -> {
+                        animation.visibility = View.INVISIBLE
+                        favRecycler.visibility = View.VISIBLE
+                        val favLocations = loadingState.data
+                        favAdapter.submitList(favLocations)
+                    }
+                    is LoadingState.Error -> {
+                        Toast.makeText(requireContext(), loadingState.message, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
+
+
+
+
 
         btn = view.findViewById(R.id.favBtn)
         btn.setOnClickListener {
@@ -101,6 +114,4 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
         fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
             .addToBackStack(null).commit()
     }
-
-
 }
